@@ -23,6 +23,15 @@ func init() {
 
 func main() {
 	router := gin.Default()
+	router.LoadHTMLGlob("web/*.html")
+	router.GET("/favicon.ico", func(c *gin.Context) {
+		c.File("./web/favicon.ico")
+	})
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"domain": domain,
+		})
+	})
 
 	router.POST("/create", handlerCreate)
 	router.GET("/:url", handlerRedirect)

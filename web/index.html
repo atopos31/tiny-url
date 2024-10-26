@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>短链接服务</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>短链接服务</h1>
+    <form id="shorten-form">
+        <label for="url">原始长链接:</label>
+        <input type="text" id="url" name="url" required placeholder="请输入原始长链接">
+        
+        <label for="time">有效期（天，可选）:</label>
+        <input type="number" id="time" name="time" placeholder="请输入有效期（默认7天）" min="1">
+
+        <button type="submit">生成短链接</button>
+    </form>
+
+    <div id="result" class="result" style="display:none;"></div>
+
+    <script>
+        document.getElementById('shorten-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const url = document.getElementById('url').value;
+            const time = parseInt(document.getElementById('time').value, 10) || 7;
+
+            try {
+                const response = await fetch('{{.domain}}/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url, time }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('result').innerHTML = 
+                    `短链接: <a href="${result.data}" target="_blank">${result.data}</a>`;
+                document.getElementById('result').style.display = 'block';
+                } else {
+                    document.getElementById('result').innerText = `错误: ${result.msg}`;
+                    document.getElementById('result').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('result').innerText = '请求失败，请稍后再试。';
+                document.getElementById('result').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
