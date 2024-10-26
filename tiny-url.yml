@@ -1,0 +1,71 @@
+openapi: '3.0.3'
+info:
+  title: 短链接服务
+  version: '1.0'
+servers:
+  - url: http://localhost:8888
+paths:
+  /{url}:
+    get:
+      parameters:
+        - name: url
+          in: path
+          schema: 
+            type: string
+          required: true
+          description: 短链接
+          examples: 
+            url:
+              value: /dadas
+      responses:
+        '301':
+          description: 301 Moved Permanently
+    
+  /create:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  example: https://www.baidu.com
+                  description: 原始长链接
+                  nullable: false
+                time:
+                  type: integer
+                  example: 7
+                  description: 有效期，单位秒
+                  nullable: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortUrl'
+  
+
+
+components:
+  schemas:
+    ShortUrl:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 200
+          description: 状态码
+
+        data:
+          type: string
+          description: 短链接
+          example: http://localhost:8080/s/1
+      
+        msg:
+          type: string
+          example: success
+          description: 状态信息
+      
