@@ -16,13 +16,19 @@ import (
 )
 
 var domain string
+var ginmode string
 
 func init() {
 	domain = os.Getenv("SERVER_DOMAIN")
+	ginmode = os.Getenv(gin.EnvGinMode)
 }
 
 func main() {
 	router := gin.Default()
+	if ginmode == gin.ReleaseMode {
+		router = gin.New()
+		router.Use(gin.Recovery())
+	}
 	router.LoadHTMLGlob("web/*.html")
 	router.GET("/favicon.ico", func(c *gin.Context) {
 		c.File("./web/favicon.ico")

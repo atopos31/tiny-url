@@ -1,0 +1,36 @@
+networks:
+  total:
+    driver: bridge
+
+services:
+  tiny-url:
+    build:
+      context: .
+      args:
+        - proxy=https://goproxy.cn
+    container_name: tiny-url
+    networks:
+      - total
+    depends_on:
+      - redis
+    environment:
+      - GIN_MODE=release
+      - SERVER_DOMAIN=https://t.hackerxiao.online
+      - SERVER_PORT=8257
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=123456
+      - REDIS_DB=0
+    ports:
+      - "8257:8257"
+    restart: always
+    
+  redis:
+    image: redis:latest
+    container_name: redis
+    command: redis-server /etc/redis/redis.conf
+    networks:
+      - total
+    volumes:
+      - ./redis.conf:/etc/redis/redis.conf
+    restart: always
